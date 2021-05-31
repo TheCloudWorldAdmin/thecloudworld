@@ -7,15 +7,15 @@ DBUser='<YOUR CHOICE>'
 DBPassword='<YOUR CHOICE>'
 DBRootPassword='<YOUR CHOICE>'
 
-# System Updates
+# Step 1 - Update your softwares
 yum -y update
 yum -y upgrade
 
-# STEP 2 - Install system software - including Web and DB
+# STEP 2 - Install Web/DB/PHP to run Wordpress
 yum install -y mariadb-server httpd
 amazon-linux-extras install -y lamp-mariadb10.2-php7.2 php7.2
 
-# STEP 3 - Web and DB Servers Online - and set to startup
+# STEP 3 - Start and Enable the Web/DB services
 systemctl enable httpd
 systemctl enable mariadb
 systemctl start httpd
@@ -38,14 +38,14 @@ sed -i "s/'database_name_here'/'$DBName'/g" wp-config.php
 sed -i "s/'username_here'/'$DBUser'/g" wp-config.php
 sed -i "s/'password_here'/'$DBPassword'/g" wp-config.php
 
-# Step 6a - permissions 
+# Step 7 - Work on permissions 
 usermod -a -G apache ec2-user   
 chown -R ec2-user:apache /var/www
 chmod 2775 /var/www
 find /var/www -type d -exec chmod 2775 {} \;
 find /var/www -type f -exec chmod 0664 {} \;
 
-# STEP 7 Create Wordpress DB
+# STEP 8 - Create Wordpress DB
 echo "CREATE DATABASE $DBName;" >> /tmp/db.setup
 echo "CREATE USER '$DBUser'@'localhost' IDENTIFIED BY '$DBPassword';" >> /tmp/db.setup
 echo "GRANT ALL ON $DBName.* TO '$DBUser'@'localhost';" >> /tmp/db.setup
